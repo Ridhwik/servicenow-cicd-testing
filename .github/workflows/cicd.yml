@@ -1,10 +1,5 @@
-
 # Cloud Dimensions - ServiceNow CI/CD lab pipeline
 # Branch: main  (Lab 4 / Lesson 8 - Run an ATF Suite and Instance Scan in a Pipeline)
-# Starting state: this is the completed Lab 3 pipeline (the pre-written instance-resolution
-# step, job-level pipeline credentials, and the apply-changes step). Your task is to add
-# the ATF test suite step (Part 1) and the instance scan step (Part 2), each with its own
-# step-level env block.
 name: CICD Pipeline
 
 on:
@@ -21,12 +16,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Pre-written for you - you do not need to edit this step.
-      # The sncicd-* actions build their request URL as
-      # https://${nowSourceInstance}.service-now.com/api/... so they need the
-      # bare instance name only. This step accepts whatever you pasted into the
-      # SN_INSTANCE_DOMAIN variable (full URL, hostname, or bare name), reduces
-      # it to that bare form, and stops the run with a clear message if it cannot.
+      # Pre-written - reduces SN_INSTANCE_DOMAIN to the bare instance name
+      # and exports it as SN_INSTANCE for the later steps.
       - name: Resolve ServiceNow instance
         env:
           RAW: ${{ vars.SN_INSTANCE_DOMAIN }}
@@ -35,13 +26,6 @@ jobs:
             echo "::error::SN_INSTANCE_DOMAIN is not set. Add it under Settings, then Secrets and variables, then Actions, on the Variables tab."
             exit 1
           fi
-          # This step cleans up whatever you pasted into SN_INSTANCE_DOMAIN: it
-          # lowercases the value, strips a leading https:// or trailing slash, and
-          # removes a trailing .service-now.com if you included it.
-          # It also rejects angle brackets, quotes, and other characters that do not
-          # belong in a hostname - for example, if you paste the placeholder text
-          # nowlearning-<your-instance-id>.lab literally instead of your real
-          # instance name, this step catches that and tells you what to fix.
           INSTANCE=$(printf '%s' "$RAW" \
             | tr -d '[:space:]' \
             | tr '[:upper:]' '[:lower:]' \
@@ -69,15 +53,15 @@ jobs:
           nowSourceInstance: ${{ env.SN_INSTANCE }}
           appScope: x_cd_grc_app
 
-      # TODO: Add the ATF test suite step here (Part 1)
+      # Part 1 - ATF test suite
       - name: Run ATF test suite
         uses: ServiceNow/sncicd-tests-run@2.0.0
         with:
           testSuiteSysId: 256083400db503107f44aad644710556
         env:
-          nowInstallInstance: ${{ env.SN_INSTANCE }}
+          nowSourceInstance: ${{ env.SN_INSTANCE }}
 
-      # TODO: Add the instance scan step here (Part 2)
+      # Part 2 - Instance scan
       - name: Run Instance Scan
         uses: ServiceNow/sncicd-instance-scan@2.0.0
         with:
@@ -85,4 +69,4 @@ jobs:
           suiteSysId: 6237eabc53203010b846ddeeff7b12c3
           appScopeSysIds: 7f0cfe480d7503107f44aad6447105bd
         env:
-          nowScanInstance: ${{ env.SN_INSTANCE }}
+          nowSourceInstance: ${{ env.SN_INSTANCE }}
