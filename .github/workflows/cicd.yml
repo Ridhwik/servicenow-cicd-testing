@@ -59,7 +59,7 @@ jobs:
         with:
           testSuiteSysId: 256083400db503107f44aad644710556
         env:
-          nowSourceInstance: ${{ env.SN_INSTANCE }}
+          nowInstallInstance: ${{ env.SN_INSTANCE }}
 
       # Part 2 - Instance scan
       - name: Run Instance Scan
@@ -69,4 +69,4 @@ jobs:
           suiteSysId: 6237eabc53203010b846ddeeff7b12c3
           appScopeSysIds: 7f0cfe480d7503107f44aad6447105bd
         env:
-          nowSourceInstance: ${{ env.SN_INSTANCE }}
+          nowScanInstance: ${{ env.SN_INSTANCE }}
