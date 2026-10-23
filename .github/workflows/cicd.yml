@@ -73,7 +73,7 @@ jobs:
       - name: Run ATF test suite
         uses: ServiceNow/sncicd-tests-run@2.0.0
         with:
-          testSuiteSysId: 90f283440db503107f44aad64471050b
+          testSuiteSysId: 256083400db503107f44aad644710556
         env:
           nowInstallInstance: ${{ env.SN_INSTANCE }}
 
